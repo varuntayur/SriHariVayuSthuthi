@@ -24,6 +24,8 @@ public class DataProvider {
 
     private static final String TAG = "DataProvider";
 
+    public static final String PREFS_NAME = "SriHariVayuStuthiLanguage";
+
     private static Map<String, SriHariVayuSthuthi> lang2vayuSthuthi = new ConcurrentHashMap<String, SriHariVayuSthuthi>();
 
     private static List<Integer> mBackgroundColors = new ArrayList<Integer>() {
@@ -39,6 +41,12 @@ public class DataProvider {
             add(R.color.silver);
         }
     };
+
+    private final static CharSequence[] languages = {"Sanskrit", "Kannada"};
+
+    public static CharSequence[] getLanguages() {
+        return languages;
+    }
 
     public static List<Integer> getBackgroundColorList() {
         return Collections.unmodifiableList(mBackgroundColors);

@@ -30,10 +30,10 @@
 
         <TextView
             android:id="@+id/sectiontitle"
-            style="?android:textAppearanceLarge"
+            style="?android:textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="8dp"
             android:textStyle="bold"/>
 
 
@@ -42,6 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center|fill"
+            android:layout_marginBottom="8dp"
             android:lineSpacingMultiplier="1.0"
             android:textStyle="bold"/>
 

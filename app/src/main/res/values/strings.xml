@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Sri Hari Vayu Sthuthi</string>
+    <string name="app_name">Sri Hari Vayu Stuthi</string>
     <string name="action_settings">Settings</string>
 
     <string name="loading_please_wait">Loading. Please wait...</string>

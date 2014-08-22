@@ -1,7 +1,10 @@
 package com.vtayur.sriharivayusthuthi.home;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,8 +18,8 @@ import android.widget.AdapterView;
 import android.widget.TextView;
 
 import com.etsy.android.grid.StaggeredGridView;
-import com.vtayur.sriharivayusthuthi.data.DataProvider;
 import com.vtayur.sriharivayusthuthi.R;
+import com.vtayur.sriharivayusthuthi.data.DataProvider;
 import com.vtayur.sriharivayusthuthi.detail.StaggeredGridAdapter;
 
 import java.util.List;
@@ -40,18 +43,55 @@ public class HomeActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.help:
+                View messageView = getLayoutInflater().inflate(R.layout.about, null, false);
+
+                TextView textView = (TextView) messageView.findViewById(R.id.about_credits);
+                int defaultColor = textView.getTextColors().getDefaultColor();
+                textView.setTextColor(defaultColor);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setIcon(R.drawable.ic_launcher);
+                builder.setTitle(R.string.app_name);
+                builder.setView(messageView);
+                builder.create();
+                builder.show();
+
+                return true;
+            case R.id.languageselector:
+                AlertDialog.Builder builderLangSelector = new AlertDialog.Builder(this);
+                builderLangSelector.setTitle("Pick a Language");
+
+                SharedPreferences settings = getSharedPreferences(DataProvider.PREFS_NAME, 0);
+                int savedLocalLanguage = settings.getInt("localLanguage", 0);
+
+                builderLangSelector.setSingleChoiceItems(DataProvider.getLanguages(), savedLocalLanguage, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d(TAG, "Language selected - " + which);
+
+                        SharedPreferences settings = getSharedPreferences(DataProvider.PREFS_NAME, 0);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putInt("localLanguage", which);
+
+                        editor.commit();
+
+                        Log.d(TAG, "Language settings saved - " + getSharedPreferences(DataProvider.PREFS_NAME, 0));
+
+                    }
+                });
+                builderLangSelector.create();
+                builderLangSelector.show();
+                break;
+            default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
