@@ -2,10 +2,12 @@ package com.vtayur.sriharivayusthuthi.home;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.util.Log;
 
 import com.vtayur.sriharivayusthuthi.data.DataProvider;
-import com.vtayur.sriharivayusthuthi.detail.ShlokaSlideActivity;
 import com.vtayur.sriharivayusthuthi.data.model.Section;
+import com.vtayur.sriharivayusthuthi.data.model.SriHariVayuSthuthi;
+import com.vtayur.sriharivayusthuthi.detail.ShlokaSlideActivity;
 
 import java.io.Serializable;
 
@@ -21,15 +23,22 @@ public enum SriHariVayuSthuthiMenu {
             intent.putExtra("sectionName", item);
             intent.putExtra("menuPosition", position);
 
-            Section section = DataProvider.getVayuSthuthi().getSection(item);
+            Section section = DataProvider.getVayuSthuthi("eng").getSection(item);
 
             if (section == null) return;
 
             intent.putExtra("shlokaList", (Serializable) section.getShlokaList());
+
+            SriHariVayuSthuthi sanVayuStuthi = DataProvider.getVayuSthuthi("san");
+            section = sanVayuStuthi.getSection(item);
+            Log.d(TAG, "SriHariVayuSthuthiMenu item section ->" + item + " " + section);
+            intent.putExtra("shlokaListLocalLang", (Serializable) section.getShlokaList());
+
             activity.startActivity(intent);
         }
     };
 
+    private static final String TAG = "SriHariVayuSthuthiMenu";
     private String menuDisplayName;
     private String menuDisplayKey;
 

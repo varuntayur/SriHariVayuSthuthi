@@ -28,7 +28,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-
 import com.vtayur.sriharivayusthuthi.R;
 import com.vtayur.sriharivayusthuthi.data.DataProvider;
 import com.vtayur.sriharivayusthuthi.data.model.Shloka;
@@ -50,18 +49,6 @@ public class ShlokaSlideActivity extends FragmentActivity {
 
     private static String TAG = "ShlokaSlideActivity";
 
-    protected List<Shloka> mShlokas;
-    /**
-     * The pager widget, which handles animation and allows swiping horizontally to access previous
-     * and next wizard steps.
-     */
-    private ViewPager mPager;
-    /**
-     * The pager adapter, which provides the pages to the view pager widget.
-     */
-    private PagerAdapter mPagerAdapter;
-    private String mSectionName;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,19 +60,26 @@ public class ShlokaSlideActivity extends FragmentActivity {
         Typeface devnanagariTf = Typeface.createFromAsset(getAssets(), "fonts/droidsansdevanagari.ttf");
 //        Typeface devnanagariTf = Typeface.createFromAsset(getAssets(), "fonts/notosanskannadaregular.ttf");
 
-        // Instantiate a ViewPager and a PagerAdapter.
-        mPager = (ViewPager) findViewById(R.id.pager);
+        ViewPager mPager = (ViewPager) findViewById(R.id.pager);
 
         mPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         Integer menuPosition = getIntent().getIntExtra("menuPosition", 0);
         mPager.setBackgroundResource(DataProvider.getBackgroundColor(menuPosition - 1));
 
-        mSectionName = getIntent().getStringExtra("sectionName");
-        if (mShlokas == null)
-            mShlokas = (List<Shloka>) getIntent().getSerializableExtra("shlokaList");
-        mPagerAdapter = new ShlokaSlidePagerAdapter(mSectionName, mShlokas, getFragmentManager(), devnanagariTf);
+        String mSectionName = getIntent().getStringExtra("sectionName");
+        List<Shloka> engShlokas = null;
+        if (engShlokas == null)
+            engShlokas = (List<Shloka>) getIntent().getSerializableExtra("shlokaList");
+
+        List<Shloka> localLangShlokas = null;
+        if (localLangShlokas == null)
+            localLangShlokas = (List<Shloka>) getIntent().getSerializableExtra("shlokaListLocalLang");
+
+        PagerAdapter mPagerAdapter = new ShlokaSlidePagerAdapter(mSectionName, engShlokas, localLangShlokas, getFragmentManager(), devnanagariTf);
+
         mPager.setAdapter(mPagerAdapter);
+
         mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -120,17 +114,19 @@ public class ShlokaSlideActivity extends FragmentActivity {
         private final Typeface tf;
         private final String sectionName;
         private List<Shloka> shlokas;
+        private List<Shloka> localLangShlokas;
 
-        public ShlokaSlidePagerAdapter(String sectionName, List<Shloka> shlokas, FragmentManager fm, Typeface tf) {
+        public ShlokaSlidePagerAdapter(String sectionName, List<Shloka> shlokas, List<Shloka> localizedShlokas, FragmentManager fm, Typeface tf) {
             super(fm);
             this.tf = tf;
             this.shlokas = shlokas;
             this.sectionName = sectionName;
+            this.localLangShlokas = localizedShlokas;
         }
 
         @Override
         public Fragment getItem(int position) {
-            return new ShlokaPageFragment(sectionName, shlokas, position, tf);
+            return new ShlokaPageFragment(sectionName, shlokas, localLangShlokas, position, tf);
         }
 
         @Override

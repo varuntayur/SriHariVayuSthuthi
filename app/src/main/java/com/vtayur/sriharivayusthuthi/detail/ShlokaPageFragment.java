@@ -55,6 +55,7 @@ public class ShlokaPageFragment extends Fragment {
     private String sectionName;
 
     private List<Shloka> shlokas;
+    private List<Shloka> localLangShlokas;
 
     private int mPageNumber;
 
@@ -64,8 +65,9 @@ public class ShlokaPageFragment extends Fragment {
 
     }
 
-    public ShlokaPageFragment(String sectionName, List<Shloka> shlokas, int position, Typeface tf) {
-        this.shlokas = shlokas;
+    public ShlokaPageFragment(String sectionName, List<Shloka> engShlokas, List<Shloka> localLangShlokas, int position, Typeface tf) {
+        this.shlokas = engShlokas;
+        this.localLangShlokas = localLangShlokas;
         this.devanagariTf = tf;
         this.mPageNumber = position;
         this.sectionName = sectionName;
@@ -93,14 +95,15 @@ public class ShlokaPageFragment extends Fragment {
         secTitleViewById.setText(sectionName + " ( " + displayPageNumber + " / " + shlokas.size() + " )");
 
         final Shloka shloka = shlokas.get(mPageNumber);
+        final Shloka localLangShloka = localLangShlokas.get(mPageNumber);
 
-        TextView shlokaText = (TextView) rootView.findViewById(R.id.shlokatext);
+        TextView shlokaText = (TextView) rootView.findViewById(R.id.shlokalocallangtext);
         shlokaText.setTypeface(devanagariTf);
-        shlokaText.setText(shloka.getText());
+        shlokaText.setText(localLangShloka.getText());
         shlokaText.setTypeface(shlokaText.getTypeface(), Typeface.BOLD);
 
         TextView shlokaenText = (TextView) rootView.findViewById(R.id.shlokaentext);
-        shlokaenText.setText(shloka.getEnText());
+        shlokaenText.setText(shloka.getText());
         shlokaenText.setTypeface(shlokaText.getTypeface(), Typeface.BOLD);
 
         WebView shlokaPhala = (WebView) rootView.findViewById(R.id.shlokaphala);

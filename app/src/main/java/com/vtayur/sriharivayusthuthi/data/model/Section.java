@@ -22,10 +22,10 @@ public class Section implements Serializable {
     @ElementList(inline = true, name = "shloka")
     private List<Shloka> shlokaList;
 
-
     @Attribute
     private String num;
 
+    private Map<String, List<Shloka>> mapLang2ListShloka = new HashMap<String, List<Shloka>>();
 
     private Map<String, Shloka> mapShlokaNum2Shloka = new HashMap<String, Shloka>();
 

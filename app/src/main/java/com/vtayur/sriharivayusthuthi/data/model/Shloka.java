@@ -21,9 +21,6 @@ public class Shloka implements Serializable {
     private String text;
 
     @Element(required = false)
-    private String enText;
-
-    @Element(required = false)
     private ShlokaDescription explanation;
 
     @Element(required = false)
@@ -37,7 +34,6 @@ public class Shloka implements Serializable {
         return "Shloka{" +
                 "num='" + num + '\'' +
                 ", text='" + text + '\'' +
-                ", enText='" + enText + '\'' +
                 ", explanation=" + explanation +
                 ", phala=" + phala +
                 '}';
@@ -52,8 +48,9 @@ public class Shloka implements Serializable {
     }
 
     public String getText() {
-        if (text != null)
-            return text.replaceAll("[^\\S\\r\\n]+", " ");
+        if (text != null) {
+            return text.replaceAll("[ ]+", " ").trim();
+        }
         return EMPTY_STRING;
     }
 
@@ -76,17 +73,6 @@ public class Shloka implements Serializable {
             stringBuilder.append(note.getFormattedNote());
         }
         return stringBuilder.toString();
-    }
-
-    public String getEnText() {
-        if (enText != null) {
-            return enText.replaceAll("[ ]+", " ").trim();
-        }
-        return EMPTY_STRING;
-    }
-
-    public void setEnText(String enText) {
-        this.enText = enText;
     }
 
     public PhalaShruthi getPhala() {

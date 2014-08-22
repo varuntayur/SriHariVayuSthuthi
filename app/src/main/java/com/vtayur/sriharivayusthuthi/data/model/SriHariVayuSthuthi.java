@@ -1,5 +1,6 @@
 package com.vtayur.sriharivayusthuthi.data.model;
 
+import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 
 import java.io.Serializable;
@@ -12,6 +13,9 @@ import java.util.Map;
  * Created by vtayur on 8/19/2014.
  */
 public class SriHariVayuSthuthi implements Serializable {
+
+    @Attribute(name = "lang")
+    private String lang;
 
     @ElementList(inline = true, name = "section")
     List<Section> sections;
@@ -49,6 +53,15 @@ public class SriHariVayuSthuthi implements Serializable {
 
         return mapSecName2Sec.keySet();
     }
+
+    public String getLang() {
+        return lang;
+    }
+
+    public void setLang(String lang) {
+        this.lang = lang;
+    }
+
 
     private void buildMap() {
         if (mapSecName2Sec.keySet().isEmpty())
