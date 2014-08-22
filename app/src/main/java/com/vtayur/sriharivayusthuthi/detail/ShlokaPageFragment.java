@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vtayur.sriharivayusthuthi.R;
+import com.vtayur.sriharivayusthuthi.data.model.PhalaShruthi;
 import com.vtayur.sriharivayusthuthi.data.model.Shloka;
 
 import java.util.List;
@@ -102,6 +103,15 @@ public class ShlokaPageFragment extends Fragment {
         shlokaenText.setText(shloka.getEnText());
         shlokaenText.setTypeface(shlokaText.getTypeface(), Typeface.BOLD);
 
+        WebView shlokaPhala = (WebView) rootView.findViewById(R.id.shlokaphala);
+
+        PhalaShruthi phala = shloka.getPhala();
+        if (phala != null)
+            shlokaPhala.loadData(phala.toString(), "text/html", null);
+
+        shlokaPhala.setBackgroundColor(Color.TRANSPARENT);
+
+
         WebView shlokaExplanation = (WebView) rootView.findViewById(R.id.shlokaexplanation);
         shlokaExplanation.setBackgroundColor(Color.TRANSPARENT);
         shlokaExplanation.loadData(shloka.getFormattedExplanation(), "text/html", null);
@@ -110,8 +120,7 @@ public class ShlokaPageFragment extends Fragment {
 
         final int resNameId = curActivity.getResources().getIdentifier(resourceName, "raw", curActivity.getPackageName());
 
-        Log.d(TAG, "ID fetched for " + resourceName + " -> " + resNameId);
-
+        Log.d(TAG, "ID fetched for packageName " + curActivity.getPackageName() + " - " + resourceName + " -> " + resNameId);
 
         ImageButton pauseButton = (ImageButton) rootView.findViewById(R.id.imageButtonPause);
         setVisibility(resNameId, pauseButton);
@@ -167,9 +176,9 @@ public class ShlokaPageFragment extends Fragment {
 
             if (mediaPlayer == null) return;
 
-            Log.d(TAG,"************ Attempting to stop media if it is playing *********");
+            Log.d(TAG, "************ Attempting to stop media if it is playing *********");
             mediaPlayer.pause();
-            Log.d(TAG,"************ Pause media was successful *********");
+            Log.d(TAG, "************ Pause media was successful *********");
         }
 
         super.onStop();

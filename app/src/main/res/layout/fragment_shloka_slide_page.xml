@@ -39,7 +39,6 @@
 
         <TextView
             android:id="@+id/shlokatext"
-            style="?android:textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center|fill"
@@ -49,7 +48,6 @@
 
         <TextView
             android:id="@+id/shlokaentext"
-            style="?android:textAppearanceMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center|fill"
@@ -84,6 +82,12 @@
 
         <WebView
             android:id="@+id/shlokaexplanation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"/>
+
+        <WebView
+            android:id="@+id/shlokaphala"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"/>

@@ -37,7 +37,11 @@ public class Note implements Serializable {
     }
 
     public String getFormattedNote() {
-        return "<b>".concat(getTitle()).concat("</b>").concat("<p align='justify'>").concat(getText()).concat("</p>");
+        String title = "";
+        if (getTitle() != null)
+            title = "<b>".concat(getTitle()).concat("</b>");
+
+        return title.concat("<p align='justify'>").concat(getText()).concat("</p>");
     }
 
     @Override

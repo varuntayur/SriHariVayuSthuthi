@@ -71,6 +71,7 @@ public class ShlokaSlideActivity extends FragmentActivity {
         Log.d(TAG, "-> Starting ScreenSlideActivity <-");
 
         Typeface devnanagariTf = Typeface.createFromAsset(getAssets(), "fonts/droidsansdevanagari.ttf");
+//        Typeface devnanagariTf = Typeface.createFromAsset(getAssets(), "fonts/notosanskannadaregular.ttf");
 
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = (ViewPager) findViewById(R.id.pager);

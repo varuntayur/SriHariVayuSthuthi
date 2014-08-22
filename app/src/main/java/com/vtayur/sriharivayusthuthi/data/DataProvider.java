@@ -61,7 +61,19 @@ public class DataProvider {
             serializer = new Persister();
             vayuSthuthi = serializer.read(SriHariVayuSthuthi.class, inputStream);
             Log.d(TAG, "* Finished de-serializing the file - sriharivayustuthi.xml *");
-            System.out.println(vayuSthuthi);
+//            System.out.println(vayuSthuthi);
+
+            inputStream = am.open("db/sriharivayustuthi-ka.xml");
+            serializer = new Persister();
+            SriHariVayuSthuthi vayuSthuthiKa = serializer.read(SriHariVayuSthuthi.class, inputStream);
+            Log.d(TAG, "* Finished de-serializing the file - sriharivayustuthi-ka.xml *");
+            System.out.println(vayuSthuthiKa);
+
+            inputStream = am.open("db/sriharivayustuthi-sa.xml");
+            serializer = new Persister();
+            SriHariVayuSthuthi vayuSthuthiSa = serializer.read(SriHariVayuSthuthi.class, inputStream);
+            Log.d(TAG, "* Finished de-serializing the file - sriharivayustuthi-sa.xml *");
+            System.out.println(vayuSthuthiSa);
 
         } catch (IOException e) {
             e.printStackTrace();

@@ -23,8 +23,11 @@ public class PhalaShruthi implements Serializable {
 
     @Override
     public String toString() {
-        return "ShlokaDescription{" +
-                "notesList=" + notesList +
-                '}';
+        StringBuilder sBuilder = new StringBuilder();
+        for (Note note: notesList) {
+            sBuilder.append(note.getFormattedNote());
+            sBuilder.append("\n");
+        }
+        return sBuilder.toString();
     }
 }

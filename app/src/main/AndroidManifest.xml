@@ -25,7 +25,7 @@
             android:uiOptions="splitActionBarWhenNarrow">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".home.MainActivity"/>
+                android:value=".home.HomeActivity"/>
         </activity>
     </application>
 
