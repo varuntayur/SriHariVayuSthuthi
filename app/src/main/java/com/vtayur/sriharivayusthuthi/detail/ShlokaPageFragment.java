@@ -164,7 +164,10 @@ public class ShlokaPageFragment extends Fragment {
     @Override
     public void onStop() {
 
-        if (mediaPlayer == null) return;
+        if (mediaPlayer == null){
+            super.onStop();
+            return;
+        }
 
         if (mediaPlayer.isPlaying()) {
 
