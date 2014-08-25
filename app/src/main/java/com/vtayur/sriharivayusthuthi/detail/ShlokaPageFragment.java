@@ -37,20 +37,10 @@ import com.vtayur.sriharivayusthuthi.data.model.Shloka;
 
 import java.util.List;
 
-
-/**
- * A fragment representing a single step in a wizard. The fragment shows a dummy title indicating
- * the page number, along with some dummy text.
- * <p/>
- * <p>This class is used by the {} and {@link
- * ShlokaSlideActivity} samples.</p>
- */
 public class ShlokaPageFragment extends Fragment {
-    /**
-     * The argument key for the page number this fragment represents.
-     */
     private static String TAG = "ShlokaPageFragment";
-    private static Typeface devanagariTf;
+
+    private Typeface customTypeface;
 
     private String sectionName;
 
@@ -62,13 +52,13 @@ public class ShlokaPageFragment extends Fragment {
     private MediaPlayer mediaPlayer;
 
     public ShlokaPageFragment() {
-
+        // required - other changing orientation will cause issues
     }
 
     public ShlokaPageFragment(String sectionName, List<Shloka> engShlokas, List<Shloka> localLangShlokas, int position, Typeface tf) {
         this.shlokas = engShlokas;
         this.localLangShlokas = localLangShlokas;
-        this.devanagariTf = tf;
+        this.customTypeface = tf;
         this.mPageNumber = position;
         this.sectionName = sectionName;
     }
@@ -98,7 +88,7 @@ public class ShlokaPageFragment extends Fragment {
         final Shloka localLangShloka = localLangShlokas.get(mPageNumber);
 
         TextView shlokaText = (TextView) rootView.findViewById(R.id.shlokalocallangtext);
-        shlokaText.setTypeface(devanagariTf);
+        shlokaText.setTypeface(customTypeface);
         shlokaText.setText(localLangShloka.getText());
         shlokaText.setTypeface(shlokaText.getTypeface(), Typeface.BOLD);
 
@@ -113,7 +103,6 @@ public class ShlokaPageFragment extends Fragment {
             shlokaPhala.loadData(phala.toString(), "text/html", null);
 
         shlokaPhala.setBackgroundColor(Color.TRANSPARENT);
-
 
         WebView shlokaExplanation = (WebView) rootView.findViewById(R.id.shlokaexplanation);
         shlokaExplanation.setBackgroundColor(Color.TRANSPARENT);
@@ -175,9 +164,9 @@ public class ShlokaPageFragment extends Fragment {
     @Override
     public void onStop() {
 
-        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+        if (mediaPlayer == null) return;
 
-            if (mediaPlayer == null) return;
+        if (mediaPlayer.isPlaying()) {
 
             Log.d(TAG, "************ Attempting to stop media if it is playing *********");
             mediaPlayer.pause();

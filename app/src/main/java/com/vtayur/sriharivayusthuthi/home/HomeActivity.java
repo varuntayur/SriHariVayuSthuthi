@@ -70,16 +70,16 @@ public class HomeActivity extends ActionBarActivity {
                 builderLangSelector.setTitle("Pick a Language");
 
                 SharedPreferences settings = getSharedPreferences(DataProvider.PREFS_NAME, 0);
-                int savedLocalLanguage = settings.getInt("localLanguage", 0);
+                String savedLocalLanguage = settings.getString(DataProvider.LOCAL_LANGUAGE, "");
 
-                builderLangSelector.setSingleChoiceItems(DataProvider.getLanguages(), savedLocalLanguage, new DialogInterface.OnClickListener() {
+                builderLangSelector.setSingleChoiceItems(DataProvider.getLanguages(), Language.getLanguageEnum(savedLocalLanguage).ordinal(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Log.d(TAG, "Language selected - " + which);
 
                         SharedPreferences settings = getSharedPreferences(DataProvider.PREFS_NAME, 0);
                         SharedPreferences.Editor editor = settings.edit();
-                        editor.putInt("localLanguage", which);
+                        editor.putString(DataProvider.LOCAL_LANGUAGE, Language.getLanguageEnum(which).toString());
 
                         editor.commit();
 
@@ -142,7 +142,8 @@ public class HomeActivity extends ActionBarActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String item = (String) parent.getAdapter().getItem(position);
 
-                    SriHariVayuSthuthiMenu.getEnum(item).execute(activity, item, position);
+                    String langSelected = getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.LOCAL_LANGUAGE, "");
+                    SriHariVayuSthuthiMenu.getEnum(item).execute(activity, item, position, Language.getLanguageEnum(langSelected));
 
                 }
             };

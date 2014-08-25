@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.vtayur.sriharivayusthuthi.R;
 import com.vtayur.sriharivayusthuthi.data.model.SriHariVayuSthuthi;
+import com.vtayur.sriharivayusthuthi.home.Language;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -25,6 +26,7 @@ public class DataProvider {
     private static final String TAG = "DataProvider";
 
     public static final String PREFS_NAME = "SriHariVayuStuthiLanguage";
+    public static final String LOCAL_LANGUAGE = "localLanguage";
 
     private static Map<String, SriHariVayuSthuthi> lang2vayuSthuthi = new ConcurrentHashMap<String, SriHariVayuSthuthi>();
 
@@ -54,9 +56,9 @@ public class DataProvider {
 
     public static List<String> getMenuNames() {
 
-        final List<String> sectionNames = new ArrayList<String>(DataProvider.getVayuSthuthi(lang2vayuSthuthi.keySet().iterator().next()).getSectionNames());
+        String anyResource = lang2vayuSthuthi.keySet().iterator().next();
 
-        return sectionNames;
+        return new ArrayList<String>(DataProvider.getVayuSthuthi(Language.getLanguageEnum(anyResource)).getSectionNames());
     }
 
     public static int getBackgroundColor(int location) {
@@ -64,8 +66,8 @@ public class DataProvider {
     }
 
     public static void init(AssetManager am) {
-        Serializer serializer = new Persister();
-        InputStream inputStream = null;
+        Serializer serializer;
+        InputStream inputStream;
         try {
             inputStream = am.open("db/sriharivayustuthi-eng.xml");
             serializer = new Persister();
@@ -99,7 +101,9 @@ public class DataProvider {
         }
     }
 
-    public static SriHariVayuSthuthi getVayuSthuthi(String lang) {
-        return lang2vayuSthuthi.get(lang);
+    public static SriHariVayuSthuthi getVayuSthuthi(Language lang) {
+        return lang2vayuSthuthi.get(lang.toString());
     }
+
+
 }

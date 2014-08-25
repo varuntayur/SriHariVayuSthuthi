@@ -16,20 +16,20 @@ import java.io.Serializable;
  */
 public enum SriHariVayuSthuthiMenu {
 
-    DEFAULT("Default", "") {
+    DEFAULT("Default") {
         @Override
-        public void execute(Activity activity, String item, int position) {
+        public void execute(Activity activity, String item, int position, Language language) {
             Intent intent = new Intent(activity, ShlokaSlideActivity.class);
             intent.putExtra("sectionName", item);
             intent.putExtra("menuPosition", position);
 
-            Section section = DataProvider.getVayuSthuthi("eng").getSection(item);
+            Section section = DataProvider.getVayuSthuthi(Language.eng).getSection(item);
 
             if (section == null) return;
 
             intent.putExtra("shlokaList", (Serializable) section.getShlokaList());
 
-            SriHariVayuSthuthi sanVayuStuthi = DataProvider.getVayuSthuthi("san");
+            SriHariVayuSthuthi sanVayuStuthi = DataProvider.getVayuSthuthi(language);
             section = sanVayuStuthi.getSection(item);
             Log.d(TAG, "SriHariVayuSthuthiMenu item section ->" + item + " " + section);
             intent.putExtra("shlokaListLocalLang", (Serializable) section.getShlokaList());
@@ -40,11 +40,9 @@ public enum SriHariVayuSthuthiMenu {
 
     private static final String TAG = "SriHariVayuSthuthiMenu";
     private String menuDisplayName;
-    private String menuDisplayKey;
 
-    SriHariVayuSthuthiMenu(String menu, String key) {
+    SriHariVayuSthuthiMenu(String menu) {
         this.menuDisplayName = menu;
-        this.menuDisplayKey = key;
     }
 
     public static SriHariVayuSthuthiMenu getEnum(String item) {
@@ -58,9 +56,5 @@ public enum SriHariVayuSthuthiMenu {
         return menuDisplayName;
     }
 
-    public String getMenuDisplayKey() {
-        return menuDisplayKey;
-    }
-
-    public abstract void execute(Activity activity, String item, int position);
+    public abstract void execute(Activity activity, String item, int position, Language language);
 }

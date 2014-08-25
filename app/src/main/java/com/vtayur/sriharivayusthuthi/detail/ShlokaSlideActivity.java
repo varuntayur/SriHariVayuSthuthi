@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import com.vtayur.sriharivayusthuthi.R;
 import com.vtayur.sriharivayusthuthi.data.DataProvider;
 import com.vtayur.sriharivayusthuthi.data.model.Shloka;
+import com.vtayur.sriharivayusthuthi.home.Language;
 
 import java.util.List;
 
@@ -57,8 +58,7 @@ public class ShlokaSlideActivity extends FragmentActivity {
 
         Log.d(TAG, "-> Starting ScreenSlideActivity <-");
 
-        Typeface devnanagariTf = Typeface.createFromAsset(getAssets(), "fonts/droidsansdevanagari.ttf");
-//        Typeface devnanagariTf = Typeface.createFromAsset(getAssets(), "fonts/notosanskannadaregular.ttf");
+        Typeface langTypeface = getTypeface();
 
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
 
@@ -68,15 +68,11 @@ public class ShlokaSlideActivity extends FragmentActivity {
         mPager.setBackgroundResource(DataProvider.getBackgroundColor(menuPosition - 1));
 
         String mSectionName = getIntent().getStringExtra("sectionName");
-        List<Shloka> engShlokas = null;
-        if (engShlokas == null)
-            engShlokas = (List<Shloka>) getIntent().getSerializableExtra("shlokaList");
+        List<Shloka> engShlokas = (List<Shloka>) getIntent().getSerializableExtra("shlokaList");
 
-        List<Shloka> localLangShlokas = null;
-        if (localLangShlokas == null)
-            localLangShlokas = (List<Shloka>) getIntent().getSerializableExtra("shlokaListLocalLang");
+        List<Shloka> localLangShlokas = (List<Shloka>) getIntent().getSerializableExtra("shlokaListLocalLang");
 
-        PagerAdapter mPagerAdapter = new ShlokaSlidePagerAdapter(mSectionName, engShlokas, localLangShlokas, getFragmentManager(), devnanagariTf);
+        PagerAdapter mPagerAdapter = new ShlokaSlidePagerAdapter(mSectionName, engShlokas, localLangShlokas, getFragmentManager(), langTypeface);
 
         mPager.setAdapter(mPagerAdapter);
 
@@ -103,6 +99,20 @@ public class ShlokaSlideActivity extends FragmentActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+    }
+
+    private Typeface getTypeface() {
+        String langPrefs = getSelectedLanguage();
+
+        Language lang = Language.getLanguageEnum(langPrefs);
+
+        lang.getTypeface(getAssets());
+
+        return lang.getTypeface(getAssets());
+    }
+
+    private String getSelectedLanguage() {
+        return getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.LOCAL_LANGUAGE, "");
     }
 
     /**
