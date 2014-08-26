@@ -18,6 +18,7 @@ package com.vtayur.sriharivayusthuthi.detail;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v13.app.FragmentStatePagerAdapter;
@@ -104,15 +105,18 @@ public class ShlokaSlideActivity extends FragmentActivity {
     private Typeface getTypeface() {
         String langPrefs = getSelectedLanguage();
 
+        Log.d(TAG, "Trying to launch activity in selected language :" + langPrefs);
+
         Language lang = Language.getLanguageEnum(langPrefs);
 
-        lang.getTypeface(getAssets());
+        Log.d(TAG, "Will get assets for activity in language :" + lang.toString());
 
         return lang.getTypeface(getAssets());
     }
 
     private String getSelectedLanguage() {
-        return getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.LOCAL_LANGUAGE, "");
+        SharedPreferences sharedPreferences = getSharedPreferences(DataProvider.PREFS_NAME, 0);
+        return sharedPreferences.getString(DataProvider.LOCAL_LANGUAGE, Language.san.toString());
     }
 
     /**
