@@ -62,7 +62,6 @@ public class ShlokaSlideActivity extends FragmentActivity {
         Typeface langTypeface = getTypeface();
 
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
-
         mPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         Integer menuPosition = getIntent().getIntExtra("menuPosition", 0);
