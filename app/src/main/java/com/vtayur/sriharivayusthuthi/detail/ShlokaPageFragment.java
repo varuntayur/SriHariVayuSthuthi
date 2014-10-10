@@ -18,9 +18,9 @@ package com.vtayur.sriharivayusthuthi.detail;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,35 +32,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vtayur.sriharivayusthuthi.R;
-import com.vtayur.sriharivayusthuthi.data.model.PhalaShruthi;
+import com.vtayur.sriharivayusthuthi.common.ShlokaMediaPlayer;
+import com.vtayur.sriharivayusthuthi.data.BundleArgs;
+import com.vtayur.sriharivayusthuthi.data.DataProvider;
 import com.vtayur.sriharivayusthuthi.data.model.Shloka;
+import com.vtayur.sriharivayusthuthi.home.Language;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ShlokaPageFragment extends Fragment {
     private static String TAG = "ShlokaPageFragment";
 
-    private Typeface customTypeface;
-
-    private String sectionName;
-
-    private List<Shloka> shlokas;
-    private List<Shloka> localLangShlokas;
-
-    private int mPageNumber;
-
-    private MediaPlayer mediaPlayer;
+    private int resNameId;
 
     public ShlokaPageFragment() {
-        // required - other changing orientation will cause issues
-    }
-
-    public ShlokaPageFragment(String sectionName, List<Shloka> engShlokas, List<Shloka> localLangShlokas, int position, Typeface tf) {
-        this.shlokas = engShlokas;
-        this.localLangShlokas = localLangShlokas;
-        this.customTypeface = tf;
-        this.mPageNumber = position;
-        this.sectionName = sectionName;
     }
 
     @Override
@@ -73,46 +59,103 @@ public class ShlokaPageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        return intializeView(inflater, container);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        Log.d(TAG, "************ Attempting to stop media that was initiated with this fragment *********");
+        ShlokaMediaPlayer.release();
+        Log.d(TAG, "************ Pause media was successful *********");
+
+    }
+
+    public String getSectionName() {
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            if (bundle.containsKey(BundleArgs.SECTION_NAME))
+                return bundle.getString(BundleArgs.SECTION_NAME);
+        }
+        return "";
+    }
+
+    public List<Shloka> getEngShlokas() {
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            if (bundle.containsKey(BundleArgs.ENG_SHLOKA_LIST))
+                return (List<Shloka>) bundle.getSerializable(BundleArgs.ENG_SHLOKA_LIST);
+        }
+        return Collections.emptyList();
+    }
+
+    public List<Shloka> getLocalLangShlokas() {
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            if (bundle.containsKey(BundleArgs.LOCAL_LANG_SHLOKA_LIST))
+                return (List<Shloka>) bundle.getSerializable(BundleArgs.LOCAL_LANG_SHLOKA_LIST);
+        }
+        return Collections.emptyList();
+    }
+
+    public int getPageNumber() {
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            if (bundle.containsKey(BundleArgs.PAGE_NUMBER))
+                return bundle.getInt(BundleArgs.PAGE_NUMBER);
+        }
+        return 1;
+    }
+
+
+    private Typeface getTypeface() {
+        String langPrefs = getSelectedLanguage();
+
+        Log.d(TAG, "Trying to launch activity in selected language :" + langPrefs);
+
+        Language lang = Language.getLanguageEnum(langPrefs);
+
+        Log.d(TAG, "Will get assets for activity in language :" + lang.toString());
+
+        return lang.getTypeface(this.getActivity().getAssets());
+    }
+
+    private String getSelectedLanguage() {
+        SharedPreferences sharedPreferences = this.getActivity().getSharedPreferences(DataProvider.PREFS_NAME, 0);
+        return sharedPreferences.getString(DataProvider.SHLOKA_DISP_LANGUAGE, Language.san.toString());
+    }
+
+    private ViewGroup intializeView(LayoutInflater inflater, ViewGroup container) {
+
+        final Activity curActivity = this.getActivity();
+        Typeface customTypeface = getTypeface();
+
         // Inflate the layout containing a title and body text.
         ViewGroup rootView = (ViewGroup) inflater
                 .inflate(R.layout.fragment_shloka_slide_page, container, false);
 
-        final Activity curActivity = this.getActivity();
-
-        String displayPageNumber = String.valueOf(mPageNumber + 1);
+        String displayPageNumber = String.valueOf(getPageNumber() + 1);
 
         TextView secTitleViewById = (TextView) rootView.findViewById(R.id.sectiontitle);
-        secTitleViewById.setText(sectionName + " ( " + displayPageNumber + " / " + shlokas.size() + " )");
+        secTitleViewById.setText(getSectionName() + " ( " + displayPageNumber + " / " + getEngShlokas().size() + " )");
 
-        final Shloka shloka = shlokas.get(mPageNumber);
-        final Shloka localLangShloka = localLangShlokas.get(mPageNumber);
+        final Shloka shloka = getEngShlokas().get(getPageNumber());
+        final Shloka localLangShloka = getLocalLangShlokas().get(getPageNumber());
 
         TextView shlokaText = (TextView) rootView.findViewById(R.id.shlokalocallangtext);
         shlokaText.setTypeface(customTypeface);
         shlokaText.setText(localLangShloka.getText());
-        shlokaText.setTypeface(shlokaText.getTypeface(), Typeface.BOLD);
 
         TextView shlokaenText = (TextView) rootView.findViewById(R.id.shlokaentext);
         shlokaenText.setText(shloka.getText());
-        shlokaenText.setTypeface(shlokaText.getTypeface(), Typeface.BOLD);
-
-        WebView shlokaPhala = (WebView) rootView.findViewById(R.id.shlokaphala);
-
-        PhalaShruthi phala = shloka.getPhala();
-        if (phala != null)
-            shlokaPhala.loadData(phala.toString(), "text/html", null);
-
-        shlokaPhala.setBackgroundColor(Color.TRANSPARENT);
 
         WebView shlokaExplanation = (WebView) rootView.findViewById(R.id.shlokaexplanation);
         shlokaExplanation.setBackgroundColor(Color.TRANSPARENT);
         shlokaExplanation.loadData(shloka.getFormattedExplanation(), "text/html", null);
 
-        final String resourceName = sectionName.toLowerCase().concat(displayPageNumber).replaceAll(" ", "");
-
-        final int resNameId = curActivity.getResources().getIdentifier(resourceName, "raw", curActivity.getPackageName());
-
-        Log.d(TAG, "ID fetched for packageName " + curActivity.getPackageName() + " - " + resourceName + " -> " + resNameId);
+        resNameId = getResourceName(curActivity);
 
         ImageButton pauseButton = (ImageButton) rootView.findViewById(R.id.imageButtonPause);
         setVisibility(resNameId, pauseButton);
@@ -120,12 +163,10 @@ public class ShlokaPageFragment extends Fragment {
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(curActivity, "Pausing sound",
+                Toast.makeText(curActivity, "Stopping media playback",
                         Toast.LENGTH_SHORT).show();
 
-                if (mediaPlayer == null) return;
-
-                mediaPlayer.pause();
+                ShlokaMediaPlayer.pause();
             }
         });
 
@@ -138,20 +179,30 @@ public class ShlokaPageFragment extends Fragment {
 
                 if (resNameId == 0) return;
 
-                if (mediaPlayer != null && mediaPlayer.isPlaying()) return;
+                String playStatus = ShlokaMediaPlayer.play(getActivity(), resNameId);
 
-                Toast.makeText(curActivity, "Playing sound",
+                if (!playStatus.isEmpty()) {
+
+                    Toast.makeText(curActivity, playStatus,
+                            Toast.LENGTH_SHORT).show();
+
+                    return;
+                }
+
+                Toast.makeText(curActivity, "Playing media",
                         Toast.LENGTH_SHORT).show();
-
-
-                mediaPlayer = MediaPlayer.create(getActivity(), resNameId);
-                mediaPlayer.start();
 
             }
         });
-
-
         return rootView;
+    }
+
+    private int getResourceName(Activity curActivity) {
+        String displayPageNumber = String.valueOf(getPageNumber() + 1);
+        String resourceName = getSectionName().toLowerCase().concat(displayPageNumber).replaceAll(" ", "");
+        int resNameId = curActivity.getResources().getIdentifier(resourceName, "raw", curActivity.getPackageName());
+        Log.d(TAG, "ID fetched for packageName " + curActivity.getPackageName() + " - " + resourceName + " -> " + resNameId);
+        return resNameId;
     }
 
     private void setVisibility(int resNameId, ImageButton pauseButton) {
@@ -159,30 +210,5 @@ public class ShlokaPageFragment extends Fragment {
             pauseButton.setVisibility(View.INVISIBLE);
         else
             pauseButton.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void onStop() {
-
-        if (mediaPlayer == null){
-            super.onStop();
-            return;
-        }
-
-        if (mediaPlayer.isPlaying()) {
-
-            Log.d(TAG, "************ Attempting to stop media if it is playing *********");
-            mediaPlayer.pause();
-            Log.d(TAG, "************ Pause media was successful *********");
-        }
-
-        super.onStop();
-    }
-
-    /**
-     * Returns the page number represented by this fragment object.
-     */
-    public int getPageNumber() {
-        return shlokas.size();
     }
 }

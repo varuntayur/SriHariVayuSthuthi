@@ -3,7 +3,7 @@ package com.vtayur.sriharivayusthuthi.home;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
@@ -21,6 +21,7 @@ import com.etsy.android.grid.StaggeredGridView;
 import com.vtayur.sriharivayusthuthi.R;
 import com.vtayur.sriharivayusthuthi.data.DataProvider;
 import com.vtayur.sriharivayusthuthi.detail.StaggeredGridAdapter;
+import com.vtayur.sriharivayusthuthi.settings.SettingsActivity;
 
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class HomeActivity extends ActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.help:
-                View messageView = getLayoutInflater().inflate(R.layout.about, null, false);
+                View messageView = getLayoutInflater().inflate(R.layout.fragment_about, null, false);
 
                 TextView textView = (TextView) messageView.findViewById(R.id.about_credits);
                 int defaultColor = textView.getTextColors().getDefaultColor();
@@ -66,29 +67,9 @@ public class HomeActivity extends ActionBarActivity {
 
                 return true;
             case R.id.languageselector:
-                AlertDialog.Builder builderLangSelector = new AlertDialog.Builder(this);
-                builderLangSelector.setTitle("Pick a Language");
-
-                SharedPreferences settings = getSharedPreferences(DataProvider.PREFS_NAME, 0);
-                String savedLocalLanguage = settings.getString(DataProvider.LOCAL_LANGUAGE, Language.san.toString());
-                Log.d(TAG, "Language restored/saved - " + savedLocalLanguage);
-                builderLangSelector.setSingleChoiceItems(DataProvider.getLanguages(), Language.getLanguageEnum(savedLocalLanguage).ordinal(), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "Language selected - " + which);
-
-                        SharedPreferences settings = getSharedPreferences(DataProvider.PREFS_NAME, 0);
-                        SharedPreferences.Editor editor = settings.edit();
-                        editor.putString(DataProvider.LOCAL_LANGUAGE, Language.getLanguageEnum(which).toString());
-
-                        editor.commit();
-
-                        Log.d(TAG, "Language settings saved - " + getSharedPreferences(DataProvider.PREFS_NAME, 0));
-
-                    }
-                });
-                builderLangSelector.create();
-                builderLangSelector.show();
+                Intent intent = new Intent(this, SettingsActivity.class);
+                Log.d(TAG, "Launching Settings Activity");
+                startActivity(intent);
                 break;
             default:
                 break;
@@ -130,14 +111,14 @@ public class HomeActivity extends ActionBarActivity {
                     listView.setOnItemClickListener(getOnMenuClickListener(activity));
 
                     SharedPreferences settings = getSharedPreferences(DataProvider.PREFS_NAME, 0);
-                    String isSettingAlreadySaved = settings.getString(DataProvider.LOCAL_LANGUAGE, "");
+                    String isSettingAlreadySaved = settings.getString(DataProvider.SHLOKA_DISP_LANGUAGE, "");
                     if (isSettingAlreadySaved.isEmpty()) {
                         SharedPreferences.Editor editor = settings.edit();
-                        editor.putString(DataProvider.LOCAL_LANGUAGE, Language.san.toString());
+                        editor.putString(DataProvider.SHLOKA_DISP_LANGUAGE, Language.san.toString());
 
                         editor.commit();
 
-                        Log.d(TAG, "Setting the default launch preference to Sanskrit at startup - " + settings.getString(DataProvider.LOCAL_LANGUAGE, ""));
+                        Log.d(TAG, "Setting the default launch preference to Sanskrit at startup - " + settings.getString(DataProvider.SHLOKA_DISP_LANGUAGE, ""));
                     }
                     progressDialog.dismiss();
                 }
@@ -152,7 +133,7 @@ public class HomeActivity extends ActionBarActivity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String item = (String) parent.getAdapter().getItem(position);
 
-                    String langSelected = getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.LOCAL_LANGUAGE, "");
+                    String langSelected = getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.SHLOKA_DISP_LANGUAGE, "");
                     SriHariVayuSthuthiMenu.getEnum(item).execute(activity, item, position, Language.getLanguageEnum(langSelected));
 
                 }

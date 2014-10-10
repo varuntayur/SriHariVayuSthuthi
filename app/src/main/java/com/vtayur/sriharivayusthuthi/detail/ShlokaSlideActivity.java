@@ -30,10 +30,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.vtayur.sriharivayusthuthi.R;
+import com.vtayur.sriharivayusthuthi.data.BundleArgs;
 import com.vtayur.sriharivayusthuthi.data.DataProvider;
 import com.vtayur.sriharivayusthuthi.data.model.Shloka;
 import com.vtayur.sriharivayusthuthi.home.Language;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -61,16 +63,15 @@ public class ShlokaSlideActivity extends FragmentActivity {
 
         Typeface langTypeface = getTypeface();
 
+        Integer menuPosition = getIntent().getIntExtra(BundleArgs.PAGE_NUMBER, 0);
+        String mSectionName = getIntent().getStringExtra(BundleArgs.SECTION_NAME);
+        List<Shloka> engShlokas = (List<Shloka>) getIntent().getSerializableExtra(BundleArgs.ENG_SHLOKA_LIST);
+        List<Shloka> localLangShlokas = (List<Shloka>) getIntent().getSerializableExtra(BundleArgs.LOCAL_LANG_SHLOKA_LIST);
+
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
-        Integer menuPosition = getIntent().getIntExtra("menuPosition", 0);
         mPager.setBackgroundResource(DataProvider.getBackgroundColor(menuPosition - 1));
-
-        String mSectionName = getIntent().getStringExtra("sectionName");
-        List<Shloka> engShlokas = (List<Shloka>) getIntent().getSerializableExtra("shlokaList");
-
-        List<Shloka> localLangShlokas = (List<Shloka>) getIntent().getSerializableExtra("shlokaListLocalLang");
 
         PagerAdapter mPagerAdapter = new ShlokaSlidePagerAdapter(mSectionName, engShlokas, localLangShlokas, getFragmentManager(), langTypeface);
 
@@ -115,7 +116,7 @@ public class ShlokaSlideActivity extends FragmentActivity {
 
     private String getSelectedLanguage() {
         SharedPreferences sharedPreferences = getSharedPreferences(DataProvider.PREFS_NAME, 0);
-        return sharedPreferences.getString(DataProvider.LOCAL_LANGUAGE, Language.san.toString());
+        return sharedPreferences.getString(DataProvider.SHLOKA_DISP_LANGUAGE, Language.san.toString());
     }
 
     /**
@@ -139,7 +140,14 @@ public class ShlokaSlideActivity extends FragmentActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return new ShlokaPageFragment(sectionName, shlokas, localLangShlokas, position, tf);
+            ShlokaPageFragment stotraPageFragment = new ShlokaPageFragment();
+            Bundle bundleArgs = new Bundle();
+            bundleArgs.putString(BundleArgs.SECTION_NAME, sectionName);
+            bundleArgs.putSerializable(BundleArgs.ENG_SHLOKA_LIST, (Serializable) shlokas);
+            bundleArgs.putSerializable(BundleArgs.LOCAL_LANG_SHLOKA_LIST, (Serializable) localLangShlokas);
+            bundleArgs.putInt(BundleArgs.PAGE_NUMBER, position);
+            stotraPageFragment.setArguments(bundleArgs);
+            return stotraPageFragment;
         }
 
         @Override

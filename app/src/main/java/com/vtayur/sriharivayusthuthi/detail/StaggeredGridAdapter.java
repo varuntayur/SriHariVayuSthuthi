@@ -2,7 +2,6 @@ package com.vtayur.sriharivayusthuthi.detail;
 
 
 import android.content.Context;
-import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,8 +55,6 @@ public class StaggeredGridAdapter extends ArrayAdapter<String> {
 
         convertView.setBackgroundResource(mBackgroundColors.get(backgroundIndex));
 
-        Log.d(TAG, "getView position:" + position + " h:" + positionHeight);
-
 //        vh.txtLineOne.setHeightRatio(positionHeight);
         vh.txtLineOne.setHeightRatio(1.5);
         vh.txtLineOne.setText(getItem(position));
@@ -74,7 +71,6 @@ public class StaggeredGridAdapter extends ArrayAdapter<String> {
         if (ratio == 0) {
             ratio = getRandomHeightRatio();
             sPositionHeightRatios.append(position, ratio);
-            Log.d(TAG, "getPositionRatio:" + position + " ratio:" + ratio);
         }
         return ratio;
     }

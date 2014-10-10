@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/dialog_settings"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@android:color/transparent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/selectlanguage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select a Language"
+            android:textStyle="bold"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <RadioGroup
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:id="@+id/language_selector">
+
+            <RadioButton
+                android:id="@+id/language_sanskrit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sanskrit"/>
+
+            <RadioButton
+                android:id="@+id/language_kannada"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Kannada"/>
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/learningMode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Learning Mode"
+            android:textStyle="bold"/>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"/>
+
+        <RadioGroup
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent" android:id="@+id/learning_mode_selector">
+
+            <RadioButton
+                android:id="@+id/learn_mode_yes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="Yes"/>
+
+            <RadioButton
+                android:id="@+id/learn_mode_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No"/>
+        </RadioGroup>
+
+        <TextView
+            android:id="@+id/hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(If Learning Mode is set to No, all shlokas appear in one page)"
+            android:textStyle=""/>
+    </LinearLayout>
+
+</LinearLayout>

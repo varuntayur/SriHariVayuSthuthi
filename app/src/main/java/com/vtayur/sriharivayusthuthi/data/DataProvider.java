@@ -25,8 +25,9 @@ public class DataProvider {
 
     private static final String TAG = "DataProvider";
 
-    public static final String PREFS_NAME = "SriHariVayuStuthiLanguage";
-    public static final String LOCAL_LANGUAGE = "localLanguage";
+    public static final String PREFS_NAME = "SriHariVayuStuthi";
+    public static final String SHLOKA_DISP_LANGUAGE = "localLanguage";
+    public static final String LEARNING_MODE = "learningMode";
 
     private static Map<String, SriHariVayuSthuthi> lang2vayuSthuthi = new ConcurrentHashMap<String, SriHariVayuSthuthi>();
 

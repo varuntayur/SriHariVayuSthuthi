@@ -44,7 +44,7 @@
             android:gravity="center|fill"
             android:layout_marginBottom="8dp"
             android:lineSpacingMultiplier="1.0"
-            android:textStyle="bold"/>
+            />
 
 
         <TextView
@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:gravity="center|fill"
             android:lineSpacingMultiplier="1.0"
-            android:textStyle="bold"/>
+            />
 
 
         <LinearLayout
@@ -69,14 +69,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="14dp"
-                android:src="@android:drawable/ic_media_pause"/>
+                android:src="@drawable/ic_media_stop"/>
 
             <ImageButton
                 android:id="@+id/imageButtonPlay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
-                android:src="@android:drawable/ic_media_play"/>
+                android:src="@drawable/ic_media_play"/>
 
         </LinearLayout>
 

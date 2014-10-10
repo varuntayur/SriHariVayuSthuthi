@@ -49,7 +49,14 @@ public class Shloka implements Serializable {
 
     public String getText() {
         if (text != null) {
-            return text.replaceAll("[ ]+", " ").trim();
+
+            StringBuilder sbuilder = new StringBuilder();
+            String[] split = text.split("\n");
+            for (String splitStr : split) {
+                sbuilder.append(splitStr.trim());
+                sbuilder.append("\n");
+            }
+            return sbuilder.toString().trim();
         }
         return EMPTY_STRING;
     }
