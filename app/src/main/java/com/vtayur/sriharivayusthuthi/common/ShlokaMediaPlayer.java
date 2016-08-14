@@ -5,6 +5,8 @@ import android.media.MediaPlayer;
 import android.os.PowerManager;
 import android.util.Log;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * Created by vtayur on 9/30/2014.
  */
@@ -12,6 +14,12 @@ public class ShlokaMediaPlayer {
 
     private static MediaPlayer mediaPlayer;
     private static final String TAG = "ShlokaMediaPlayer";
+
+    private static AtomicInteger playCounter = new AtomicInteger();
+
+    public static void setLoopCounter(int value) {
+        playCounter.set(value);
+    }
 
     public static void pause() {
         if (mediaPlayer != null) {
@@ -25,7 +33,9 @@ public class ShlokaMediaPlayer {
 
     public static void release() {
         if (mediaPlayer != null) {
+            mediaPlayer.reset();
             mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
 
@@ -43,7 +53,42 @@ public class ShlokaMediaPlayer {
         mediaPlayer.setWakeMode(activity.getBaseContext(), PowerManager.SCREEN_DIM_WAKE_LOCK);
         mediaPlayer.start();
 
+        mediaPlayer.setOnCompletionListener(new PlaybackCompleteListener(activity, resId));
+
         return "";
+    }
+
+    private static class PlaybackCompleteListener implements MediaPlayer.OnCompletionListener {
+
+        private final Activity activity;
+        private final int resId;
+
+        public PlaybackCompleteListener(Activity activity, int resId) {
+            this.activity = activity;
+            this.resId = resId;
+        }
+
+        @Override
+        public void onCompletion(MediaPlayer mp) {
+
+            Log.d(TAG, "onComplete track, release mediaPlayer");
+            if (mediaPlayer != null) {
+                mediaPlayer.reset();
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+            Log.d(TAG, "onComplete track, many more to go ? " + playCounter.get());
+
+            if (playCounter.decrementAndGet() > 0) {
+                mediaPlayer = MediaPlayer.create(activity, resId);
+                mediaPlayer.setWakeMode(activity.getBaseContext(), PowerManager.SCREEN_DIM_WAKE_LOCK);
+                mediaPlayer.start();
+
+                mediaPlayer.setOnCompletionListener(new PlaybackCompleteListener(activity, resId));
+
+                Log.d(TAG, "onComplete restarting playback, how many more to go ? " + playCounter.get());
+            }
+        }
     }
 
 }

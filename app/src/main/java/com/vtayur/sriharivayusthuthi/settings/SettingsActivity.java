@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.NumberPicker;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
@@ -26,6 +28,23 @@ public class SettingsActivity extends Activity {
         setContentView(R.layout.activity_settings);
 
         Log.d(TAG, "activity_settings activity being launched");
+
+        NumberPicker repeatShlokasCnt = (NumberPicker) findViewById(R.id.repeatShlokasCount);
+        repeatShlokasCnt.setMinValue(1);
+        repeatShlokasCnt.setMaxValue(10);
+
+        repeatShlokasCnt.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+            @Override
+            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                SharedPreferences settings = getSharedPreferences(DataProvider.PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString(DataProvider.REPEAT_SHLOKA, Integer.toString(newVal));
+
+                editor.commit();
+
+                Log.d(TAG, "setOnValueChangedListener - Repeat shloka settings saved - " + getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.REPEAT_SHLOKA, "3"));
+            }
+        });
 
         final RadioGroup radioGrpLangSelector = (RadioGroup) findViewById(R.id.language_selector);
 
@@ -68,6 +87,7 @@ public class SettingsActivity extends Activity {
         super.onStart();
 
         SharedPreferences settings = getSharedPreferences(DataProvider.PREFS_NAME, 0);
+        String savedRepeatShlokaCnt = settings.getString(DataProvider.REPEAT_SHLOKA, "");
         String savedLocalLang = settings.getString(DataProvider.SHLOKA_DISP_LANGUAGE, "");
         String learningMode = settings.getString(DataProvider.LEARNING_MODE, "");
         if (savedLocalLang.isEmpty()) {
@@ -76,6 +96,7 @@ public class SettingsActivity extends Activity {
         if (learningMode.isEmpty()) {
             Log.d(TAG, "Learning mode activity_settings are not set - will set to Yes and continue");
         }
+
         RadioButton rbSanskrit = (RadioButton) findViewById(R.id.language_sanskrit);
         RadioButton rbKannada = (RadioButton) findViewById(R.id.language_kannada);
         if (Language.getLanguageEnum(savedLocalLang).equals(Language.san)) {
@@ -92,7 +113,19 @@ public class SettingsActivity extends Activity {
             rbLearnModeNo.setChecked(true);
         }
 
+        if(savedRepeatShlokaCnt.isEmpty()){
+            Log.d(TAG, "Repeat Shloka activity_settings are not set - will set to 3");
+            NumberPicker repeatShlokasCnt = (NumberPicker) findViewById(R.id.repeatShlokasCount);
+            repeatShlokasCnt.setValue(Integer.valueOf(DataProvider.REPEAT_SHLOKA_DEFAULT));
+        }
+        else{
+            Log.d(TAG, "Repeat Shloka activity_settings are set - will set to " + savedRepeatShlokaCnt);
+            NumberPicker repeatShlokasCnt = (NumberPicker) findViewById(R.id.repeatShlokasCount);
+            repeatShlokasCnt.setValue(Integer.valueOf(savedRepeatShlokaCnt));
+        }
+
         Log.d(TAG, "Settings are restored for Language - " + getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.SHLOKA_DISP_LANGUAGE, ""));
         Log.d(TAG, "Settings are restored for Learning mode - " + getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.LEARNING_MODE, ""));
+        Log.d(TAG, "Settings are restored for Repeat Shloka settings - " + getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.REPEAT_SHLOKA, ""));
     }
 }

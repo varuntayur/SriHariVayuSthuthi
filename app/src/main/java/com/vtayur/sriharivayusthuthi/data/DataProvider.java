@@ -28,6 +28,8 @@ public class DataProvider {
     public static final String PREFS_NAME = "SriHariVayuStuthi";
     public static final String SHLOKA_DISP_LANGUAGE = "localLanguage";
     public static final String LEARNING_MODE = "learningMode";
+    public static final String REPEAT_SHLOKA = "repeatShlokaCount" ;
+    public static final String REPEAT_SHLOKA_DEFAULT = "3";
 
     private static Map<String, SriHariVayuSthuthi> lang2vayuSthuthi = new ConcurrentHashMap<String, SriHariVayuSthuthi>();
 
