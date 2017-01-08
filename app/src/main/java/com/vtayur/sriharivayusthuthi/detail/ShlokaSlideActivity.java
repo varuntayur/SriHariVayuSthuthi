@@ -28,6 +28,7 @@ import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 
 import com.vtayur.sriharivayusthuthi.R;
 import com.vtayur.sriharivayusthuthi.data.BundleArgs;
@@ -73,7 +74,7 @@ public class ShlokaSlideActivity extends FragmentActivity {
 
         mPager.setBackgroundResource(DataProvider.getBackgroundColor(menuPosition - 1));
 
-        PagerAdapter mPagerAdapter = new ShlokaSlidePagerAdapter(mSectionName, engShlokas, localLangShlokas, getFragmentManager(), langTypeface);
+        PagerAdapter mPagerAdapter = new ShlokaSlidePagerAdapter(mSectionName, engShlokas, localLangShlokas, getFragmentManager(), this.getWindow(), langTypeface);
 
         mPager.setAdapter(mPagerAdapter);
 
@@ -129,18 +130,20 @@ public class ShlokaSlideActivity extends FragmentActivity {
         private final String sectionName;
         private List<Shloka> shlokas;
         private List<Shloka> localLangShlokas;
+        private Window curWindow;
 
-        public ShlokaSlidePagerAdapter(String sectionName, List<Shloka> shlokas, List<Shloka> localizedShlokas, FragmentManager fm, Typeface tf) {
+        public ShlokaSlidePagerAdapter(String sectionName, List<Shloka> shlokas, List<Shloka> localizedShlokas, FragmentManager fm, Window window, Typeface tf) {
             super(fm);
             this.tf = tf;
             this.shlokas = shlokas;
             this.sectionName = sectionName;
             this.localLangShlokas = localizedShlokas;
+            this.curWindow = window;
         }
 
         @Override
         public Fragment getItem(int position) {
-            ShlokaPageFragment stotraPageFragment = new ShlokaPageFragment();
+            ShlokaPageFragment stotraPageFragment = new ShlokaPageFragment(this.curWindow);
             Bundle bundleArgs = new Bundle();
             bundleArgs.putString(BundleArgs.SECTION_NAME, sectionName);
             bundleArgs.putSerializable(BundleArgs.ENG_SHLOKA_LIST, (Serializable) shlokas);

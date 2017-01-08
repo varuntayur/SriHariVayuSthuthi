@@ -8,4 +8,5 @@ public class BundleArgs {
     public static final String ENG_SHLOKA_LIST = "engShlokaList";
     public static final String LOCAL_LANG_SHLOKA_LIST = "localLangShlokaList";
     public static final String PAGE_NUMBER = "pageNumber";
+    public static final String CUR_WINDOW = "curWindow";
 }

@@ -26,6 +26,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.webkit.WebView;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -46,7 +47,13 @@ public class ShlokaPageFragment extends Fragment {
 
     private int resNameId;
 
+    private Window curWindow;
+
     public ShlokaPageFragment() {
+    }
+
+    public ShlokaPageFragment(Window window) {
+        this.curWindow = window;
     }
 
     @Override
@@ -136,6 +143,8 @@ public class ShlokaPageFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater
                 .inflate(R.layout.fragment_shloka_slide_page, container, false);
 
+        ShlokaMediaPlayer.setCurrentWindow(getCurWindow());
+
         String displayPageNumber = String.valueOf(getPageNumber() + 1);
 
         TextView secTitleViewById = (TextView) rootView.findViewById(R.id.sectiontitle);
@@ -196,6 +205,10 @@ public class ShlokaPageFragment extends Fragment {
             }
         });
         return rootView;
+    }
+
+    private Window getCurWindow() {
+        return this.curWindow;
     }
 
     private int getResourceName(Activity curActivity) {

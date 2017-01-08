@@ -28,6 +28,7 @@ import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -114,6 +115,10 @@ public class StotraInOnePageActivity extends FragmentActivity {
                         Toast.LENGTH_SHORT).show();
                 try {
                     mediaPlayer.pause();
+                    if(getWindow() != null){
+                        Log.d(TAG, "Pause/Resume: Allowing screen to be turned Off");
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    }
                 } catch (IllegalStateException ex) {
                     Log.e(TAG, "Exception while trying to stop mediaplayer status.");
                 }
@@ -145,12 +150,16 @@ public class StotraInOnePageActivity extends FragmentActivity {
             Log.d(TAG, "Done with all streams for media playback");
             ImageButton playButton = (ImageButton) curActivity.findViewById(R.id.imageButtonPlay);
             playButton.setClickable(true);
+
             if(mediaPlayer!=null) {
                 mediaPlayer.reset();
                 mediaPlayer.release();
                 mediaPlayer=null;
+                if(getWindow() != null){
+                    Log.d(TAG, "EndTrack: Allowing screen to be turned Off");
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
             }
-
             Log.d(TAG, "playMediaTrack, how many more to go? " + playCounter.get());
             if(playCounter.decrementAndGet() >= 0) {
                 Log.d(TAG, "playMediaTrack, how many more to go? " + playCounter.get());
@@ -160,10 +169,23 @@ public class StotraInOnePageActivity extends FragmentActivity {
             }
             return;
         }
-
+        if(mediaPlayer != null){
+            int curPos = mediaPlayer.getCurrentPosition();
+            if(curPos > 0) {
+                if(getWindow() != null){
+                    Log.e(TAG, "Pause/Resume: Allowing screen to be turned On");
+                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                mediaPlayer.start();
+                return;
+            }
+        }
         final Integer nextResource = mediaResIterator.next();
         mediaPlayer = MediaPlayer.create(curActivity, nextResource);
-        mediaPlayer.setWakeMode(curActivity.getBaseContext(), PowerManager.SCREEN_DIM_WAKE_LOCK);
+        if(getWindow() != null){
+            Log.d(TAG, "start: Allowing screen to be turned On");
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
         mediaPlayer.start();
         Log.d(TAG, "Starting new stream for media playback " + nextResource );
 
@@ -175,6 +197,10 @@ public class StotraInOnePageActivity extends FragmentActivity {
                     mediaPlayer.reset();
                     mediaPlayer.release();
                     mediaPlayer=null;
+                    if(getWindow() != null){
+                        Log.d(TAG, "EndTrack: Allowing screen to be turned Off");
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    }
                 }
                 Log.d(TAG, "Requesting for continuing next media stream");
                 playMediaTrack(curActivity);
@@ -191,6 +217,10 @@ public class StotraInOnePageActivity extends FragmentActivity {
                     mediaPlayer.reset();
                     mediaPlayer.release();
                     mediaPlayer=null;
+                    if(getWindow() != null){
+                        Log.d(TAG, "EndTrack: Allowing screen to be turned Off");
+                        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                    }
                 }
                 return false;
             }

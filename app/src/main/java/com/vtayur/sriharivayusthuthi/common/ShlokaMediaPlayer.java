@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.media.MediaPlayer;
 import android.os.PowerManager;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,6 +19,8 @@ public class ShlokaMediaPlayer {
 
     private static AtomicInteger playCounter = new AtomicInteger();
 
+    private static Window curWindow;
+
     public static void setLoopCounter(int value) {
         playCounter.set(value);
     }
@@ -25,6 +29,10 @@ public class ShlokaMediaPlayer {
         if (mediaPlayer != null) {
             try {
                 mediaPlayer.pause();
+                if(curWindow != null) {
+                    Log.d(TAG, "Allowing screen to be turned off");
+                    curWindow.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
             } catch (IllegalStateException ex) {
                 Log.e(TAG, "Exception while trying to pause mediaplayer");
             }
@@ -49,13 +57,31 @@ public class ShlokaMediaPlayer {
         } catch (IllegalStateException ex) {
             Log.e(TAG, "Exception while trying to fetch mediaplayer status.");
         }
+        if(mediaPlayer != null){
+            int curPos = mediaPlayer.getCurrentPosition();
+            if(curPos > 0) {
+                mediaPlayer.start();
+                if(curWindow != null){
+                    Log.d(TAG, "Pause/Resume: Allowing screen to be turned On");
+                    curWindow.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
+                return "";
+            }
+        }
         mediaPlayer = MediaPlayer.create(activity, resId);
-        mediaPlayer.setWakeMode(activity.getBaseContext(), PowerManager.SCREEN_DIM_WAKE_LOCK);
+        if(curWindow != null){
+            Log.d(TAG, "Play: Allowing screen to be turned On");
+            curWindow.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
         mediaPlayer.start();
 
         mediaPlayer.setOnCompletionListener(new PlaybackCompleteListener(activity, resId));
 
         return "";
+    }
+
+    public static void setCurrentWindow(Window currentWindow) {
+        curWindow = currentWindow;
     }
 
     private static class PlaybackCompleteListener implements MediaPlayer.OnCompletionListener {
@@ -76,12 +102,19 @@ public class ShlokaMediaPlayer {
                 mediaPlayer.reset();
                 mediaPlayer.release();
                 mediaPlayer = null;
+                if(curWindow != null) {
+                    Log.d(TAG, "OnComplete: Allowing screen to be turned off");
+                    curWindow.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
             }
             Log.d(TAG, "onComplete track, many more to go ? " + playCounter.get());
 
             if (playCounter.decrementAndGet() > 0) {
                 mediaPlayer = MediaPlayer.create(activity, resId);
-                mediaPlayer.setWakeMode(activity.getBaseContext(), PowerManager.SCREEN_DIM_WAKE_LOCK);
+                if(curWindow != null){
+                    Log.e(TAG, "Loop play: Allowing screen to be turned On");
+                    curWindow.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                }
                 mediaPlayer.start();
 
                 mediaPlayer.setOnCompletionListener(new PlaybackCompleteListener(activity, resId));

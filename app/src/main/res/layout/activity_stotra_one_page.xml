@@ -31,14 +31,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="14dp"
-                android:src="@drawable/ic_media_stop"/>
+                android:src="@android:drawable/ic_media_pause"/>
 
             <ImageButton
                 android:id="@+id/imageButtonPlay"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="24dp"
-                android:src="@drawable/ic_media_play"/>
+                android:src="@android:drawable/ic_media_play"/>
 
         </LinearLayout>
     </LinearLayout>
