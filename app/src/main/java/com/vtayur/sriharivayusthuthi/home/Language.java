@@ -8,7 +8,7 @@ import android.graphics.Typeface;
  */
 public enum Language {
 
-    san("Sanskrit", "fonts/droidsansdevanagari.ttf"), kan("Kannada", "fonts/notosanskannadaregular.ttf"), eng("English", "");
+    san("Sanskrit", "fonts/droidsansdevanagari.ttf"), kan("Kannada", "fonts/NotoSansKannadaRegular.ttf"), eng("English", "");
 
     private final String language;
     private final String font;

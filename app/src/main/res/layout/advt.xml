@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="match_parent">
+    <RelativeLayout android:orientation="horizontal" android:padding="5dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+        <LinearLayout android:id="@+id/madhvanamaAdLayout" android:padding="3dp" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginRight="5dp" android:layout_alignParentLeft="true">
+            <ImageView android:id="@+id/imageMadhvanama" android:layout_width="50dp" android:layout_height="50dp" android:onClick="launchMadhvanama" app:srcCompat="@drawable/madhvanama"/>
+        </LinearLayout>
+        <TextView android:textSize="15dp" android:typeface="sans" android:textStyle="bold" android:textColor="#040404" android:id="@+id/titleMadhvanama" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Madhvanama" android:layout_toRightOf="@+id/madhvanamaAdLayout" android:layout_alignTop="@+id/madhvanamaAdLayout" android:onClick="launchMadhvanama"/>
+        <TextView android:textSize="10dp" android:textColor="#343434" android:id="@+id/madhvanamaDetails" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:text="@string/madhvanamaAdvtText" android:layout_toRightOf="@+id/madhvanamaAdLayout" android:layout_below="@+id/titleMadhvanama" android:onClick="launchMadhvanama"/>
+    </RelativeLayout>
+</LinearLayout>

@@ -1,6 +1,5 @@
 package com.vtayur.sriharivayusthuthi.detail;
 
-
 import android.content.Context;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -8,79 +7,66 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-
 import com.etsy.android.grid.util.DynamicHeightTextView;
 import com.vtayur.sriharivayusthuthi.R;
 import com.vtayur.sriharivayusthuthi.data.DataProvider;
-
 import java.util.List;
 import java.util.Random;
 
-/**
- * ADAPTER
- */
-
 public class StaggeredGridAdapter extends ArrayAdapter<String> {
-
     private static final String TAG = "StaggeredGridAdapter";
-    private static final SparseArray<Double> sPositionHeightRatios = new SparseArray<Double>();
+    private static final SparseArray<Double> sPositionHeightRatios = new SparseArray();
+    private final List<Integer> mBackgroundColors = DataProvider.getBackgroundColorList();
     private final LayoutInflater mLayoutInflater;
-    private final Random mRandom;
-    private final List<Integer> mBackgroundColors;
+    private final Random mRandom = new Random();
 
-    public StaggeredGridAdapter(final Context context, final int textViewResourceId) {
-        super(context, textViewResourceId);
-        mLayoutInflater = LayoutInflater.from(context);
-        mRandom = new Random();
-        mBackgroundColors = DataProvider.getBackgroundColorList();
+    static class ViewHolder {
+        Button btnGo;
+        DynamicHeightTextView txtLineOne;
+
+        ViewHolder() {
+        }
     }
 
-    @Override
-    public View getView(final int position, View convertView, final ViewGroup parent) {
+    public StaggeredGridAdapter(Context context, int textViewResourceId) {
+        super(context, textViewResourceId);
+        this.mLayoutInflater = LayoutInflater.from(context);
+    }
 
+    public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder vh;
+        int backgroundIndex;
         if (convertView == null) {
-            convertView = mLayoutInflater.inflate(R.layout.list_item_sample, parent, false);
+            convertView = this.mLayoutInflater.inflate(R.layout.list_item_sample, parent, false);
             vh = new ViewHolder();
             vh.txtLineOne = (DynamicHeightTextView) convertView.findViewById(R.id.txt_line1);
-
             convertView.setTag(vh);
         } else {
             vh = (ViewHolder) convertView.getTag();
         }
-
         double positionHeight = getPositionRatio(position);
-        int backgroundIndex = position >= mBackgroundColors.size() ?
-                position % mBackgroundColors.size() : position;
-
-        convertView.setBackgroundResource(mBackgroundColors.get(backgroundIndex));
-
-//        vh.txtLineOne.setHeightRatio(positionHeight);
-        vh.txtLineOne.setHeightRatio(1.5);
-        vh.txtLineOne.setText(getItem(position));
-
+        if (position >= this.mBackgroundColors.size()) {
+            backgroundIndex = position % this.mBackgroundColors.size();
+        } else {
+            backgroundIndex = position;
+        }
+        convertView.setBackgroundResource(((Integer) this.mBackgroundColors.get(backgroundIndex)).intValue());
+        vh.txtLineOne.setHeightRatio(1.5d);
+        vh.txtLineOne.setText((CharSequence) getItem(position));
         return convertView;
     }
 
-    private double getPositionRatio(final int position) {
-        double ratio = sPositionHeightRatios.get(position, 0.0);
-        // if not yet done generate and stash the columns height
-        // in our real world scenario this will be determined by
-        // some match based on the known height and width of the image
-        // and maybe a helpful way to get the column height!
-        if (ratio == 0) {
-            ratio = getRandomHeightRatio();
-            sPositionHeightRatios.append(position, ratio);
+    private double getPositionRatio(int position) {
+        double ratio = ((Double) sPositionHeightRatios.get(position, Double.valueOf(0.0d))).doubleValue();
+        if (ratio != 0.0d) {
+            return ratio;
         }
+        ratio = getRandomHeightRatio();
+        sPositionHeightRatios.append(position, Double.valueOf(ratio));
         return ratio;
     }
 
     private double getRandomHeightRatio() {
-        return (mRandom.nextDouble() / 2.0) + 1.0; // height will be 1.0 - 1.5 the width
-    }
-
-    static class ViewHolder {
-        DynamicHeightTextView txtLineOne;
-        Button btnGo;
+        return (this.mRandom.nextDouble() / 2.0d) + 1.0d;
     }
 }

@@ -1,20 +1,24 @@
 package com.vtayur.sriharivayusthuthi.home;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.AssetManager;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.etsy.android.grid.StaggeredGridView;
@@ -23,62 +27,11 @@ import com.vtayur.sriharivayusthuthi.data.DataProvider;
 import com.vtayur.sriharivayusthuthi.detail.StaggeredGridAdapter;
 import com.vtayur.sriharivayusthuthi.settings.SettingsActivity;
 
-import java.util.List;
-
-
-public class HomeActivity extends ActionBarActivity {
+public class HomeActivity extends AppCompatActivity {
     private static String TAG = "HomeActivity";
     private ProgressDialog progressDialog;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sgv);
-
-        progressDialog = ProgressDialog.show(this, "", getResources().getString(R.string.loading_please_wait), true);
-
-        new DataProviderTask(this).execute(getAssets());
-    }
-
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.help:
-                View messageView = getLayoutInflater().inflate(R.layout.fragment_about, null, false);
-
-                TextView textView = (TextView) messageView.findViewById(R.id.about_credits);
-                int defaultColor = textView.getTextColors().getDefaultColor();
-                textView.setTextColor(defaultColor);
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                builder.setIcon(R.drawable.ic_launcher);
-                builder.setTitle(R.string.app_name);
-                builder.setView(messageView);
-                builder.create();
-                builder.show();
-
-                return true;
-            case R.id.languageselector:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                Log.d(TAG, "Launching Settings Activity");
-                startActivity(intent);
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     private class DataProviderTask extends AsyncTask<AssetManager, Void, Long> {
-
         Activity currentActivity;
 
         public DataProviderTask(Activity activity) {
@@ -86,66 +39,88 @@ public class HomeActivity extends ActionBarActivity {
         }
 
         protected void onPostExecute(Long result) {
-            final LayoutInflater inflater = currentActivity.getLayoutInflater();
+            final LayoutInflater inflater = this.currentActivity.getLayoutInflater();
             final Activity activity = this.currentActivity;
-            runOnUiThread(new Runnable() {
+            HomeActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
-
-                    StaggeredGridView listView = (StaggeredGridView) findViewById(R.id.grid_view);
-
+                    StaggeredGridView listView = (StaggeredGridView) HomeActivity.this.findViewById(R.id.grid_view);
                     View header = inflater.inflate(R.layout.list_item_header_footer, null);
-                    TextView txtHeaderTitle = (TextView) header.findViewById(R.id.txt_title);
-                    txtHeaderTitle.setText(getResources().getString(R.string.app_name));
-
+                    ((TextView) header.findViewById(R.id.txt_title)).setText(HomeActivity.this.getResources().getString(R.string.app_name));
                     listView.addHeaderView(header);
                     header.setClickable(false);
-
                     StaggeredGridAdapter mAdapter = new StaggeredGridAdapter(activity, R.id.txt_line1);
-
-                    final List<String> sectionNames = DataProvider.getMenuNames();
-
-                    for (String data : sectionNames) {
+                    for (String data : DataProvider.getMenuNames()) {
                         mAdapter.add(data);
                     }
-                    listView.setAdapter(mAdapter);
-                    listView.setOnItemClickListener(getOnMenuClickListener(activity));
-
-                    SharedPreferences settings = getSharedPreferences(DataProvider.PREFS_NAME, 0);
-                    String isSettingAlreadySaved = settings.getString(DataProvider.SHLOKA_DISP_LANGUAGE, "");
-                    if (isSettingAlreadySaved.isEmpty()) {
-                        SharedPreferences.Editor editor = settings.edit();
+                    listView.setAdapter((ListAdapter) mAdapter);
+                    listView.setOnItemClickListener(DataProviderTask.this.getOnMenuClickListener(activity));
+                    SharedPreferences settings = HomeActivity.this.getSharedPreferences(DataProvider.PREFS_NAME, 0);
+                    if (settings.getString(DataProvider.SHLOKA_DISP_LANGUAGE, "").isEmpty()) {
+                        Editor editor = settings.edit();
                         editor.putString(DataProvider.SHLOKA_DISP_LANGUAGE, Language.san.toString());
-
                         editor.commit();
-
-                        Log.d(TAG, "Setting the default launch preference to Sanskrit at startup - " + settings.getString(DataProvider.SHLOKA_DISP_LANGUAGE, ""));
+                        Log.d(HomeActivity.TAG, "Setting the default launch preference to Sanskrit at startup - " + settings.getString(DataProvider.SHLOKA_DISP_LANGUAGE, ""));
                     }
-                    progressDialog.dismiss();
+                    listView.addFooterView(inflater.inflate(R.layout.advt, null));
+                    HomeActivity.this.progressDialog.dismiss();
                 }
             });
-            Log.d(TAG, "Finished launching main-menu");
-
+            Log.d(HomeActivity.TAG, "Finished launching main-menu");
         }
 
-        private AdapterView.OnItemClickListener getOnMenuClickListener(final Activity activity) {
-            return new AdapterView.OnItemClickListener() {
-                @Override
+        private OnItemClickListener getOnMenuClickListener(final Activity activity) {
+            return new OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     String item = (String) parent.getAdapter().getItem(position);
-
-                    String langSelected = getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.SHLOKA_DISP_LANGUAGE, "");
-                    SriHariVayuSthuthiMenu.getEnum(item).execute(activity, item, position, Language.getLanguageEnum(langSelected));
-
+                    SriHariVayuSthuthiMenu.getEnum(item).execute(activity, item, position, Language.getLanguageEnum(HomeActivity.this.getSharedPreferences(DataProvider.PREFS_NAME, 0).getString(DataProvider.SHLOKA_DISP_LANGUAGE, "")));
                 }
             };
         }
 
-        @Override
         protected Long doInBackground(AssetManager... assetManagers) {
-
-            DataProvider.init(getAssets());
-            Log.d(TAG, "Finished background task execution.");
-            return 1l;
+            DataProvider.init(HomeActivity.this.getAssets());
+            Log.d(HomeActivity.TAG, "Finished background task execution.");
+            return Long.valueOf(1);
         }
+    }
+
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView((int) R.layout.activity_sgv);
+        this.progressDialog = ProgressDialog.show(this, "", getResources().getString(R.string.loading_please_wait), true);
+        new DataProviderTask(this).execute(new AssetManager[]{getAssets()});
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.languageselector:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                Log.d(TAG, "Launching Settings Activity");
+                startActivity(intent);
+                break;
+            case R.id.help:
+                View messageView = getLayoutInflater().inflate(R.layout.fragment_about, null, false);
+                TextView textView = (TextView) messageView.findViewById(R.id.about_credits);
+                textView.setTextColor(textView.getTextColors().getDefaultColor());
+                Builder builder = new Builder(this);
+                builder.setIcon(R.drawable.ic_launcher);
+                builder.setTitle(R.string.app_name);
+                builder.setView(messageView);
+                builder.create();
+                builder.show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void launchMadhvanama(View v) {
+        Intent intent = new Intent("android.intent.action.VIEW");
+        intent.setData(Uri.parse("market://details?id=com.vtayur.madhvanama"));
+        startActivity(intent);
     }
 }
